@@ -1,9 +1,9 @@
-const fileUtils = require('./fileUtils');
-const objectUtils = require('./objectUtils');
+const fileUtils = require('./utils/fileUtils');
+const objectUtils = require('./utils/objectUtils');
 
-// fileUtils.sha1('index.js').then((result) => {
-//   console.log(result);
-// });
+fileUtils.sha1('index.js').then((result) => {
+  console.log(result);
+});
 //
 // fileUtils.traverse({
 //   filePath: "C:\\Users\\Luigi\\Desktop\\temp\\.git\\COMMIT_EDITMSG",
