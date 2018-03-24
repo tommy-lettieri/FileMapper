@@ -1,5 +1,7 @@
 let self = module.exports = {
-  diffObject: (a, b) => {
+  diffObject: (options) => {
+    const a = options.a;
+    const b = options.b;
     if(typeof(a) !== typeof(b) || Array.isArray(a) !== Array.isArray(b)) {
       // they do not have the same type (including one is an array while the other is not)
       return false;
@@ -13,7 +15,10 @@ let self = module.exports = {
         if (a.hasOwnProperty(prop)) {
           if(b.hasOwnProperty(prop)) {
             // both objects have the same property
-            if(!self.diffObject(a[prop], b[prop])) {
+            if(!self.diffObject({
+              a: a[prop],
+              b: b[prop]
+            })) {
               return false
             }
           } else {
@@ -36,7 +41,6 @@ let self = module.exports = {
       if(a.length !== b.length) {
         return false;
       }
-
       // go through each item in the array and use this compare method
       for(let i = 0; i < a.length; i++) {
         if(!self.diffObject(a[i], b[i])) {

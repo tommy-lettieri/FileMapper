@@ -1,9 +1,9 @@
 const fileUtils = require('./utils/fileUtils');
 const objectUtils = require('./utils/objectUtils');
 
-fileUtils.sha1('index.js').then((result) => {
-  console.log(result);
-});
+// fileUtils.sha1('index.js').then((result) => {
+//   console.log(result);
+// });
 //
 // fileUtils.traverse({
 //   filePath: "C:\\Users\\Luigi\\Desktop\\temp\\.git\\COMMIT_EDITMSG",
@@ -52,7 +52,7 @@ let a = {
   q: 'q',
   r: 'r',
   // z: 'z',
-  arr: ['a', 'b', 'c'],
+  arr: ['a', 'b', 'c',],
   z: {
     a: 'a',
     b: 'b',
@@ -60,10 +60,10 @@ let a = {
     q: 'q',
     r: 'r',
     // z: 'z',
-    arr: ['a', 'b', 'c'],
+    arr: ['a', 'b', 'c', ],
   },
 }
-
+//
 let b = {
   r: 'r',
   s: 's',
@@ -71,16 +71,25 @@ let b = {
   q: 'q',
   b: 'b',
   // z: 'z',
-  arr: ['a', 'b', 'c'],
+  arr: ['a', 'b', 'c',],
   z: {
     a: 'a',
-    b: 'r',
+    b: 'b',
     s: 's',
     q: 'q',
     r: 'r',
     // z: 'z',
-    arr: ['a', 'b', 'c'],
+    arr: ['a', 'b', 'c',],
   },
 }
 
-console.log(objectUtils.diffObject(a,b));
+// console.log(objectUtils.diffObject(
+//   a,
+//   b
+// ));
+
+console.log(objectUtils.diffObject({
+  a:a,
+  b:b,
+  sortArrays: true
+}));
