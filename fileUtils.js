@@ -26,6 +26,12 @@ let self = module.exports = {
     });
   },
   /**
+  Get the filesize of a given filepath
+  */
+  getFileSize: function(filePath) {
+    return fs.lstatSync(filePath).size;
+  },
+  /**
   Recursively goes through and finds all files in a specific path
   If the path is a file it will simply end there, otherwise it will list the files and call itself with each child
   @param: options - {filePath: String, onFile(path), onError(childPath, err)} - the path to the file, the onFile callback (can be called many times), the error callback (can be called many times)
