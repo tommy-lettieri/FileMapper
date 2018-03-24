@@ -8,6 +8,9 @@ const fileUtils = require('./fileUtils');
 //   filePath: "C:\\Users\\Luigi\\Desktop\\temp\\.git\\COMMIT_EDITMSG",
 //   onFile: function(filePath) {
 //     console.log("File Base Path" + filePath);
+//   },
+//   onDone: function() {
+//     console.log('file done');
 //   }
 // });
 //
@@ -15,13 +18,16 @@ const fileUtils = require('./fileUtils');
 //   filePath: "C:\\Users\\Luigi\\Desktop\\temp",
 //   onFile: function(filePath) {
 //     console.log("Directory Base Path" + filePath);
+//   },
+//   onDone: function() {
+//     console.log('dir done');
 //   }
 // });
 
 let results = {};
 fileUtils.traverse({
   filePath: "C:\\Users\\Luigi\\Desktop\\temp",
-  onFile: function(filePath) {
+  onFile: (filePath) => {
     fileUtils.sha1(filePath).then((sha1) => {
       let key = sha1 + "_" + fileUtils.getFileSize(filePath);
       if (!results[key]) {
@@ -32,5 +38,8 @@ fileUtils.traverse({
 
       results[key].childPaths.push(filePath);
     });
+  },
+  onDone: () => {
+    console.log(JSON.stringify(results, null, 2));
   }
 });
