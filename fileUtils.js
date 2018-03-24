@@ -3,6 +3,10 @@ const path = require('path');
 const crypto = require('crypto');
 
 let self = module.exports = {
+  /**
+  @param: path - the path to the file to sha1
+  @return: Promise - A promise of the sha1 or the error
+  */
   sha1: function(path) {
     return new Promise((resolve, reject) => {
       let stream = fs.createReadStream(path);
@@ -21,6 +25,11 @@ let self = module.exports = {
       stream.pipe(hash);
     });
   },
+  /**
+  Recursively goes through and finds all files in a specific path
+  If the path is a file it will simply end there, otherwise it will list the files and call itself with each child
+  @param: options - {filePath: String, onFile(path), onError(err)} - the path to the file, the onFile callback (can be called many times), the error callback (can be called many times)
+  */
   traverse: function(options) {
     fs.readdir(options.filePath, function(err, items) {
       for (var i=0; i<items.length; i++) {
@@ -30,7 +39,7 @@ let self = module.exports = {
           self.traverse({
             filePath: childPath,
             onFile: options.onFile,
-            failure: options.failure
+            onError: options.onError
           });
         } else if (stats.isFile()) {
           if(typeof(options.onFile) == 'function') {
@@ -38,8 +47,8 @@ let self = module.exports = {
           }
         } else {
           console.log(childPath + " is not a file or directory");
-          if(typeof(options.failure) == 'function') {
-            options.failure(childPath + " is not a file or directory");
+          if(typeof(options.onError) == 'function') {
+            options.onError(childPath + " is not a file or directory");
           }
         }
       }
