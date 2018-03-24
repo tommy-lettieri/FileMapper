@@ -1,4 +1,5 @@
 const fileUtils = require('./fileUtils');
+const objectUtils = require('./objectUtils');
 
 // fileUtils.sha1('index.js').then((result) => {
 //   console.log(result);
@@ -24,22 +25,62 @@ const fileUtils = require('./fileUtils');
 //   }
 // });
 
-let results = {};
-fileUtils.traverse({
-  filePath: "C:\\Users\\Luigi\\Desktop\\temp",
-  onFile: (filePath) => {
-    fileUtils.sha1(filePath).then((sha1) => {
-      let key = sha1 + "_" + fileUtils.getFileSize(filePath);
-      if (!results[key]) {
-        results[key] = {
-          childPaths: []
-        };
-      }
+// let results = {};
+// fileUtils.traverse({
+//   filePath: "C:\\Users\\Luigi\\Desktop\\temp",
+//   onFile: (filePath) => {
+//     fileUtils.sha1(filePath).then((sha1) => {
+//       let key = sha1 + "_" + fileUtils.getFileSize(filePath);
+//       if (!results[key]) {
+//         results[key] = {
+//           childPaths: []
+//         };
+//       }
+//
+//       results[key].childPaths.push(filePath);
+//     });
+//   },
+//   onDone: () => {
+//     console.log(JSON.stringify(results, null, 2));
+//   }
+// });
 
-      results[key].childPaths.push(filePath);
-    });
+let a = {
+  a: 'a',
+  b: 'b',
+  s: 's',
+  q: 'q',
+  r: 'r',
+  // z: 'z',
+  arr: ['a', 'b', 'c'],
+  z: {
+    a: 'a',
+    b: 'b',
+    s: 's',
+    q: 'q',
+    r: 'r',
+    // z: 'z',
+    arr: ['a', 'b', 'c'],
   },
-  onDone: () => {
-    console.log(JSON.stringify(results, null, 2));
-  }
-});
+}
+
+let b = {
+  r: 'r',
+  s: 's',
+  a: 'a',
+  q: 'q',
+  b: 'b',
+  // z: 'z',
+  arr: ['a', 'b', 'c'],
+  z: {
+    a: 'a',
+    b: 'r',
+    s: 's',
+    q: 'q',
+    r: 'r',
+    // z: 'z',
+    arr: ['a', 'b', 'c'],
+  },
+}
+
+console.log(objectUtils.diffObject(a,b));
