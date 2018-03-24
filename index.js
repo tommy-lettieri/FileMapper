@@ -4,11 +4,16 @@ fileUtils.sha1('index.js').then((result) => {
   console.log(result);
 });
 
-let p = "C:\\Users\\Luigi\\Desktop\\temp"
+fileUtils.traverse({
+  filePath: "C:\\Users\\Luigi\\Desktop\\temp\\.git\\COMMIT_EDITMSG",
+  onFile: function(filePath) {
+    console.log("File Base Path" + filePath);
+  }
+})
 
 fileUtils.traverse({
-  filePath: p,
+  filePath: "C:\\Users\\Luigi\\Desktop\\temp",
   onFile: function(filePath) {
-    console.log(filePath);
+    console.log("Directory Base Path" + filePath);
   }
 })

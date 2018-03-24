@@ -31,27 +31,26 @@ let self = module.exports = {
   @param: options - {filePath: String, onFile(path), onError(childPath, err)} - the path to the file, the onFile callback (can be called many times), the error callback (can be called many times)
   */
   traverse: function(options) {
-    fs.readdir(options.filePath, function(err, items) {
-      for (var i=0; i<items.length; i++) {
-        let childPath = path.resolve(options.filePath, items[i]);
-        let stats = fs.lstatSync(childPath);
-        if (stats.isDirectory()) {
+    let stats = fs.lstatSync(options.filePath);
+    if (stats.isDirectory()) {
+      fs.readdir(options.filePath, function(err, items) {
+        for (var i=0; i<items.length; i++) {
+          let childPath = path.resolve(options.filePath, items[i]);
           self.traverse({
             filePath: childPath,
             onFile: options.onFile,
             onError: options.onError
           });
-        } else if (stats.isFile()) {
-          if(typeof(options.onFile) == 'function') {
-            options.onFile(childPath);
-          }
-        } else {
-          console.log(childPath + " is not a file or directory");
-          if(typeof(options.onError) == 'function') {
-            options.onError(childPath, childPath + " is not a file or directory");
-          }
         }
+      });
+    } else if (stats.isFile()) {
+      if(typeof(options.onFile) == 'function') {
+        options.onFile(options.filePath);
       }
-    });
+    } else {
+      if(typeof(options.onError) == 'function') {
+        options.onError(options.filePath, options.filePath + " is not a file or directory");
+      }
+    }
   }
 }
