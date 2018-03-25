@@ -5,6 +5,29 @@ let self = module.exports = {
     if(typeof(a) !== typeof(b) || Array.isArray(a) !== Array.isArray(b)) {
       // they do not have the same type (including one is an array while the other is not)
       return false;
+    } else if (Array.isArray(a)) {
+      if(a.length !== b.length) {
+        return false;
+      }
+
+      if(options.sortArrays) {
+        a.sort();
+        b.sort();
+      }
+
+      // go through each item in the array and use this compare method
+      for(let i = 0; i < a.length; i++) {
+        if(!self.diffObject({
+          a: a[i],
+          b: b[i],
+          sortArrays: options.sortArrays
+        })) {
+          return false
+        }
+      }
+
+      // if the array never returned false than it is true
+      return true;
     } else if (typeof(a) === 'object') {
       // compare two objects, this means:
       // 1. Make sure each property in a is in b
@@ -17,7 +40,8 @@ let self = module.exports = {
             // both objects have the same property
             if(!self.diffObject({
               a: a[prop],
-              b: b[prop]
+              b: b[prop],
+              sortArrays: options.sortArrays
             })) {
               return false
             }
@@ -36,19 +60,6 @@ let self = module.exports = {
       }
 
       // never was different so they must be equal
-      return true;
-    } else if (Array.isArray(a)) {
-      if(a.length !== b.length) {
-        return false;
-      }
-      // go through each item in the array and use this compare method
-      for(let i = 0; i < a.length; i++) {
-        if(!self.diffObject(a[i], b[i])) {
-          return false
-        }
-      }
-
-      // if the array never returned false than it is true
       return true;
     } else {
       // if it is a primitive values imply return the equality
