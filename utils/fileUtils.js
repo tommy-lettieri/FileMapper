@@ -105,7 +105,7 @@ let self = module.exports = {
   },
   readFile: function(filePath) {
     return new Promise((resolve, reject) => {
-      fs.readFile(filePath, (err, data) => {
+      fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
           return reject(err);
         } else {
