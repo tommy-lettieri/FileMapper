@@ -65,5 +65,17 @@ let self = module.exports = {
       // if it is a primitive values imply return the equality
       return a === b;
     }
+  },
+  diffArray: (options) => {
+    // Credit: https://stackoverflow.com/a/33034768
+    const { firstArray, secondArray } = options;
+    let union = firstArray.filter(x => secondArray.includes(x));
+    let firstArrayExclusive = firstArray.filter(x => !secondArray.includes(x));
+    let secondArrayExclusive = secondArray.filter(x => !firstArray.includes(x));
+    return {
+      union,
+      firstArrayExclusive,
+      secondArrayExclusive
+    }
   }
 }

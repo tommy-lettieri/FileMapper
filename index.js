@@ -1,7 +1,7 @@
 const fileUtils = require('./utils/fileUtils');
 const objectUtils = require('./utils/objectUtils');
 
-console.log(JSON.stringify(process.argv, null, 2));
+console.log(`Arguements: ${JSON.stringify(process.argv, null, 2)}`);
 
 // arg 0: node exe path
 // arg 1: path to run script
@@ -14,8 +14,8 @@ console.log(JSON.stringify(process.argv, null, 2));
   const startFilePath = process.argv[3] || ".";
   const outFilePath = process.argv[4];
     const results = {};
-    await new Promise(resolve => {
-      fileUtils.traverse({
+    await new Promise(async resolve => {
+      await fileUtils.traverse({
         filePath: startFilePath,
         onFile: async (filePath) => {
           const hash = await fileUtils.sha1(filePath);
@@ -33,7 +33,26 @@ console.log(JSON.stringify(process.argv, null, 2));
     }
     break;
     case "diff":
-    console.log("TODO");
+    const firstFile = process.argv[3];
+    if (!firstFile) {
+      console.error("diff requires a two files to read from, received none");
+      process.exit(1);
+    }
+    const secondFile = process.argv[4];
+    if (!secondFile) {
+      console.error("diff requires a two files to read from, received one");
+      process.exit(1);
+    }
+
+    const firstFileString = await fileUtils.readFile(firstFile);
+    const secondFileString = await fileUtils.readFile(secondFile);
+    const firstArray = Object.keys(JSON.parse(firstFileString));
+    const secondArray = Object.keys(JSON.parse(secondFileString));
+    const diff = objectUtils.diffArray({
+      firstArray,
+      secondArray
+    });
+    console.log(JSON.stringify(diff, null, 2));
     break;
     case "dups":
     const inFilePath = process.argv[3];

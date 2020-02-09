@@ -36,7 +36,7 @@ let self = module.exports = {
   If the path is a file it will simply end there, otherwise it will list the files and call itself with each child
   @param: options - {filePath: String, onFile(path), onError(childPath, err)} - the path to the file, the onFile callback (can be called many times), the error callback (can be called many times)
   */
-  traverse: function(options) {
+  traverse: async function(options) {
     let stats = fs.lstatSync(options.filePath);
     if (stats.isDirectory()) {
       fs.readdir(options.filePath, (err, items) => {
@@ -73,7 +73,10 @@ let self = module.exports = {
     } else if (stats.isFile()) {
       // if it is a file call the file callback
       if(typeof(options.onFile) == 'function') {
-        options.onFile(options.filePath);
+        const onFileResult = options.onFile(options.filePath);
+        if (typeof(onFileResult.then) === 'function') {
+          await onFileResult;
+        }
       }
 
       // the file is done immediately due to it's lack of children

@@ -8,9 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:mon": "nodemon index.js",
     "dev:setup": "[ -d test ] || mkdir test",
-    "dev:map":"npm run dev:setup && npm start -- map . test/out.map.json",
-    "dev:dups":"npm run dev:setup && npm run dev:map && npm start -- dups test/out.map.json",
-    "dev:diff":"npm run dev:setup && npm run dev:map && npm start -- diff"
+    "dev:map": "npm run dev:setup && npm start -- map . test/out.map.json",
+    "dev:dups": "npm run dev:setup && npm run dev:map && npm start -- dups test/out.map.json > test/out.dups.map.json",
+    "dev:diff": "npm run dev:setup && npm start -- map ./node_modules/ansi-regex test/diff1.map.json && npm start -- map ./node_modules/supports-color test/diff2.map.json && npm start -- diff test/diff1.map.json test/diff2.map.json > test/diff.json"
   },
   "author": "",
   "license": "ISC",
