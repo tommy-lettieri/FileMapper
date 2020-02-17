@@ -1,6 +1,7 @@
 const fileUtils = require('./utils/fileUtils');
 const objectUtils = require('./utils/objectUtils');
 const path = require('path');
+const fs = require('fs');
 
 console.log(`Arguements: ${JSON.stringify(process.argv, null, 2)}`);
 
@@ -66,7 +67,17 @@ const dups = async (inFilePath) => {
 const sync = async (inFilePathSync, destinationPath) => {
   const inFileString = await fileUtils.readFile(inFilePathSync);
   const sourceObj = JSON.parse(inFileString);
-  const destinationObj = await map(destinationPath, null);
+  let stats = fs.lstatSync(destinationPath);
+  let destinationObj;
+  if(stats.isFile()) {
+    const destinationString = await fileUtils.readFile(destinationPath);
+    destinationObj = JSON.parse(destinationString);
+    destinationPath = path.dirname(destinationPath);
+  } else if (stats.isDirectory()) {
+    destinationObj = await map(destinationPath, path.join(destinationPath, "preAutoMap.json"));
+  } else {
+    throw new Error(`Cannot read destination file ${destinationPath}`);
+  }
   const firstArray = Object.keys(sourceObj);
   const secondArray = Object.keys(destinationObj);
   const diff = objectUtils.diffArray({
@@ -76,7 +87,7 @@ const sync = async (inFilePathSync, destinationPath) => {
   for(let i = 0; i < diff.firstArrayExclusive.length; i++) {
     const item = diff.firstArrayExclusive[i];
     const ext = path.extname(sourceObj[item][0]);
-    await fileUtils.copyFile(sourceObj[item][0], path.join(destinationPath, `${item}.${ext}`));
+    await fileUtils.copyFile(sourceObj[item][0], path.join(destinationPath, `${item}${ext}`));
   }
 }
 
