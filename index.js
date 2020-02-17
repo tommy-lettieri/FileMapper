@@ -64,20 +64,30 @@ const dups = async (inFilePath) => {
   console.log(JSON.stringify(resultDupsMap, null, 2));
 }
 
-const sync = async (inFilePathSync, destinationPath) => {
-  const inFileString = await fileUtils.readFile(inFilePathSync);
-  const sourceObj = JSON.parse(inFileString);
-  let stats = fs.lstatSync(destinationPath);
-  let destinationObj;
-  if(stats.isFile()) {
-    const destinationString = await fileUtils.readFile(destinationPath);
-    destinationObj = JSON.parse(destinationString);
-    destinationPath = path.dirname(destinationPath);
-  } else if (stats.isDirectory()) {
-    destinationObj = await map(destinationPath, path.join(destinationPath, "preAutoMap.json"));
-  } else {
+const sync = async (sourcePath, destinationPath) => {
+  const readOrGenerateMap = async (filePath, mapDest, mapName) => {
+    const stats = fs.lstatSync(filePath);
+    if(stats.isFile()) {
+      const fileContent = await fileUtils.readFile(filePath);
+      return JSON.parse(fileContent);
+    } else if(stats.isDirectory()) {
+      return map(filePath, path.join(mapDest, mapName));
+    } else {
+      throw new Error(`Cannot read for reading or generating map ${filePath}`);
+    }
+  }
+
+  let destinationDirectory = destinationPath;
+  let destStats = fs.lstatSync(destinationPath);
+  if(destStats.isFile()) {
+    destinationDirectory = path.dirname(destinationPath);
+  } else if (!destStats.isDirectory()) {
     throw new Error(`Cannot read destination file ${destinationPath}`);
   }
+
+  const destinationObj = await readOrGenerateMap(destinationPath, destinationDirectory, "destination.map.json");
+  const sourceObj = await readOrGenerateMap(sourcePath, destinationDirectory, "source.map.json");
+
   const firstArray = Object.keys(sourceObj);
   const secondArray = Object.keys(destinationObj);
   const diff = objectUtils.diffArray({
@@ -87,7 +97,7 @@ const sync = async (inFilePathSync, destinationPath) => {
   for(let i = 0; i < diff.firstArrayExclusive.length; i++) {
     const item = diff.firstArrayExclusive[i];
     const ext = path.extname(sourceObj[item][0]);
-    await fileUtils.copyFile(sourceObj[item][0], path.join(destinationPath, `${item}${ext}`));
+    await fileUtils.copyFile(sourceObj[item][0], path.join(destinationDirectory, `${item}${ext}`));
   }
 }
 
