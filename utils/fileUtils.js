@@ -116,5 +116,13 @@ let self = module.exports = {
         }
       });
     });
+  },
+  copyFile: function(from, to) {
+    return new Promise((resolve, reject) => {
+      fs.copyFile(from, to, (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
   }
 }

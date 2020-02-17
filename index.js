@@ -1,5 +1,6 @@
 const fileUtils = require('./utils/fileUtils');
 const objectUtils = require('./utils/objectUtils');
+const path = require('path');
 
 console.log(`Arguements: ${JSON.stringify(process.argv, null, 2)}`);
 
@@ -22,6 +23,7 @@ const map = async (startFilePath, outFilePath) => {
   } else {
     await fileUtils.writeFile(outFilePath, s);
   }
+  return results;
 }
 
 const diff = async (firstFile, secondFile) => {
@@ -61,6 +63,23 @@ const dups = async (inFilePath) => {
   console.log(JSON.stringify(resultDupsMap, null, 2));
 }
 
+const sync = async (inFilePathSync, destinationPath) => {
+  const inFileString = await fileUtils.readFile(inFilePathSync);
+  const sourceObj = JSON.parse(inFileString);
+  const destinationObj = await map(destinationPath, null);
+  const firstArray = Object.keys(sourceObj);
+  const secondArray = Object.keys(destinationObj);
+  const diff = objectUtils.diffArray({
+    firstArray,
+    secondArray
+  });
+  for(let i = 0; i < diff.firstArrayExclusive.length; i++) {
+    const item = diff.firstArrayExclusive[i];
+    const ext = path.extname(sourceObj[item][0]);
+    await fileUtils.copyFile(sourceObj[item][0], path.join(destinationPath, `${item}.${ext}`));
+  }
+}
+
 // arg 0: node exe path
 // arg 1: path to run script
 // arg 2: command
@@ -80,6 +99,11 @@ const dups = async (inFilePath) => {
   case "dups":
   const inFilePath = process.argv[3];
   await dups(inFilePath);
+  break;
+  case "sync":
+  const inFilePathSync = process.argv[3];
+  const destinationPath = process.argv[4];
+  await sync(inFilePathSync, destinationPath);
   break;
   case "usage":
   console.log("TODO");
